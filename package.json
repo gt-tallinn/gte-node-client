@@ -1,5 +1,5 @@
 {
-  "name": "gt-client",
+  "name": "gte-node-client",
   "version": "0.0.1",
   "description": "Service profiler client",
   "main": "index.js",
@@ -18,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gt-tallinn/node-client.git"
+    "url": "git+https://github.com/gt-tallinn/gte-node-client.git"
   },
   "author": "Konstantin Zolotarev <konstantin.zolotarev@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gt-tallinn/node-client/issues"
+    "url": "https://github.com/gt-tallinn/gte-node-client/issues"
   },
-  "homepage": "https://github.com/gt-tallinn/node-client#readme"
+  "homepage": "https://github.com/gt-tallinn/gte-node-client#readme"
 }
