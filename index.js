@@ -1,5 +1,6 @@
 'use strict'
 
+const debug = require('debug')('gte-node-client')
 const _ = require('lodash')
 const request = require('superagent')
 
@@ -8,7 +9,7 @@ const request = require('superagent')
  * @type {Object}
  */
 const defaultConfig = {
-    explorerUri: '',
+    uri: '',
     service: ''
 }
 
@@ -20,12 +21,12 @@ module.exports = class GtClient {
      * Initialisation of client
      *
      * @param {Object} config
-     * @param {String} config.explorerUri
+     * @param {String} config.uri
      * @param {String} config.service
      */
     constructor(config = {}) {
 
-        if (!_.isObject(config) || _.isEmpty(config.explorerUri)) {
+        if (!_.isObject(config) || _.isEmpty(config.uri)) {
             throw new Error('Wrong Explorer URI provied for client')
         }
         this.config = _.defaultsDeep(config, defaultConfig)
@@ -46,10 +47,12 @@ module.exports = class GtClient {
     start(details) {
 
         if (!_.isObject(details) || _.isEmpty(details.id) || _.isEmpty(details.context)) {
-            throw new Error('Failed to start measurement because of no id/context provided')
+            debug('Failed to start measurement because of no id/context provided')
+            return
         }
         if (_.hasIn(this._measurements, [details.id, details.context])) {
-            throw new Error(`Measurement already started for id: ${details.id} and context: ${details.context}`)
+            debug(`Measurement already started for id: ${details.id} and context: ${details.context}`)
+            return
         }
         // Check for request id existence
         if (!_.isObject(this._measurements[details.id])) {
@@ -72,10 +75,10 @@ module.exports = class GtClient {
     stop(details) {
 
         if (!_.isObject(details) || _.isEmpty(details.id) || _.isEmpty(details.context)) {
-            throw new Error('Failed to stop measurement because of no id/context provided')
+            debug('Failed to stop measurement because of no id/context provided')
         }
         if (!_.hasIn(this._measurements, [details.id, details.context]) || !_.isObject(this._measurements[details.id][details.context])) {
-            throw new Error(`Measurement was not started for id: ${details.id} and context: ${details.context}`)
+            debug(`Measurement was not started for id: ${details.id} and context: ${details.context}`)
         }
         this._measurements[details.id][details.context].stop = this._time()
         // Run flush
@@ -105,7 +108,8 @@ module.exports = class GtClient {
     _clear(details) {
 
         if (!_.isObject(details) || _.isEmpty(details.id) || _.isEmpty(details.context)) {
-            throw new Error('Failed to clear measurement because of no id/context provided')
+            debug('Failed to clear measurement because of no id/context provided')
+            return
         }
         if (!_.hasIn(this._measurements, [details.id, details.context])) {
             return
@@ -124,10 +128,12 @@ module.exports = class GtClient {
     _flush(details) {
 
         if (!_.isObject(details) || _.isEmpty(details.id) || _.isEmpty(details.context)) {
-            throw new Error('Failed to flush measurement because of no id/context provided')
+            debug('Failed to flush measurement because of no id/context provided')
+            return
         }
         if (!_.hasIn(this._measurements, [details.id, details.context])) {
-            throw new Error(`Failed to flush measurement for id: ${details.id} and context: ${details.context}`)
+            debug(`Failed to flush measurement for id: ${details.id} and context: ${details.context}`)
+            return
         }
         const meta = this._measurements[details.id][details.context]
         const data = {
@@ -137,15 +143,14 @@ module.exports = class GtClient {
             start: meta.start,
             stop: meta.stop,
         }
+        debug('Sending data for backend %o', data)
         return request
-            .post(`${this.config.explorerUri}/add`)
+            .post(`${this.config.uri}/add`)
             .send(data)
             .type('application/json')
             .then(() => this._clear(details))
             .catch((err) => {
 
-                console.log(err)
-                return Promise.reject(err)
             })
     }
 }

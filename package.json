@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "config": "^1.30.0",
+    "debug": "^3.1.0",
     "lodash": "^4.17.10",
     "superagent": "^3.8.3"
   },

@@ -21,7 +21,7 @@ describe('Base test :: ', () => {
     })
 
     it('Send everything', () => {
-        const config = { explorerUri: EXPLORER_URI, service: 'test-service' }
+        const config = { uri: EXPLORER_URI, service: 'test-service' }
         const client = new GtClient(config)
 
         const details = { id: random(), context: 'test.handler', type: 'test-type' }
