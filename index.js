@@ -93,8 +93,7 @@ module.exports = class GtClient {
      */
     _time() {
 
-        const time = process.hrtime()
-        return time[0] * NS_PER_SEC + time[1]
+        return Date.now() * 1e6
     }
 
     /**
